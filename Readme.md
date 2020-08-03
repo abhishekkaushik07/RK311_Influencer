@@ -43,20 +43,20 @@
 5. College - Indian Institute of Technology Tirupati
 
 6. Tasks completed
-1. Our tool takes 3 secs to get the details of the IP address
-2. Integrated our tool with 4 APIs(shodan, IP2proxy, IPquality, vpnapi) 
-3. Our tool does real-time analysis
-4. Implemented honeypot for detecting real-time attacks from VPN/Proxy enabled users
-5. Detailed reports generated in text, html and pdf formats for further analysis by experts
-6. Locating the location of origin of IP address using Google Maps 
-7. Maintains history of recently scanned IP addresses
+	1. Our tool takes 3 secs to get the details of the IP address
+	2. Integrated our tool with 4 APIs(shodan, IP2proxy, IPquality, vpnapi) 
+	3. Our tool does real-time analysis
+	4. Implemented honeypot for detecting real-time attacks from VPN/Proxy enabled users
+	5. Detailed reports generated in text, html and pdf formats for further analysis by experts
+	6. Locating the location of origin of IP address using Google Maps 
+	7. Maintains history of recently scanned IP addresses
 
 7. Idea Chart
 ![alt text](https://github.com/abhishekkaushik07/RK311_Influencer/blob/master/idea.png)
 
 8. Future Improvements
-1. Machine learning can be used to determine the probabilistic behaviour of an IP in use for proxy/VPN.
-2. We can use SIEM tools to get the log data of different attacks in real-time
-3. Collaborating with the governments and ISPs will give us more data of attacks and their IP addresses which will improve our database
-4. We can plot the data from SIEM tools and other sources(APIs, ISPs and governments) to create a threat map which will be a very useful visualization for a security operations center like BPRD
+	1. Machine learning can be used to determine the probabilistic behaviour of an IP in use for proxy/VPN.
+	2. We can use SIEM tools to get the log data of different attacks in real-time
+	3. Collaborating with the governments and ISPs will give us more data of attacks and their IP addresses which will improve our database
+	4. We can plot the data from SIEM tools and other sources(APIs, ISPs and governments) to create a threat map which will be a very useful visualization for a security operations center like BPRD
 
