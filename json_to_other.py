@@ -2,12 +2,14 @@
 # 1. sudo apt-get install wkhtmltopdf
 # 2. pip install json2html
 # 3. pip install pdfkit
-
+# 4. pip install zipfile36
 from json2html import *
 import json
 import pdfkit
 
-def convert_json():
+from zipfile36 import ZipFile 
+
+def generate_reports():
 	with open("shodanout.json") as f:
 		js = json.load(f)
 		x = json2html.convert(json = js)
@@ -68,7 +70,55 @@ def convert_json():
 		f2.write(data)
 		f2.close()
 
+	with open("vpnapiout.json") as f:
+		js = json.load(f)
+		x = json2html.convert(json = js)
+
+		f1 = open("vpnapiout.html",'w')
+		f1.write(x)
+		f1.close()
+
+	with open("vpnapiout.json") as f:
+		data = f.read().replace('\n', '')
+
+		f2 = open("vpnapiout.txt", 'w')
+		f2.write(data)
+		f2.close()
+
 	pdfkit.from_file('whoisout.html','whoisout.pdf')
 	pdfkit.from_file('ipqualityout.html','ipqualityout.pdf')
 	pdfkit.from_file('ip2proxyout.html','ip2proxyout.pdf')
 	pdfkit.from_file('shodanout.html','shodanout.pdf')
+	pdfkit.from_file('vpnapiout.html','vpnapiout.pdf')
+
+	with ZipFile('pdf_reports.zip', 'w') as zipObj2:
+	   	# Add multiple files to the zip
+	   	zipObj2.write('whoisout.pdf')
+	   	zipObj2.write('shodanout.pdf')
+	   	zipObj2.write('ipqualityout.pdf')
+	   	zipObj2.write('ip2proxyout.pdf')
+	   	zipObj2.write('vpnapiout.pdf')
+
+	with ZipFile('html_reports.zip', 'w') as zipObj2:
+	   	# Add multiple files to the zip
+	   	zipObj2.write('whoisout.html')
+	   	zipObj2.write('shodanout.html')
+	   	zipObj2.write('ipqualityout.html')
+	   	zipObj2.write('ip2proxyout.html')
+	   	zipObj2.write('vpnapiout.html')
+
+	with ZipFile('txt_reports.zip', 'w') as zipObj2:
+	   	# Add multiple files to the zip
+	   	zipObj2.write('whoisout.txt')
+	   	zipObj2.write('shodanout.txt')
+	   	zipObj2.write('ipqualityout.txt')
+	   	zipObj2.write('ip2proxyout.txt')
+	   	zipObj2.write('vpnapiout.txt')
+
+	with ZipFile('json_reports.zip', 'w') as zipObj2:
+	   	# Add multiple files to the zip
+	   	zipObj2.write('whoisout.json')
+	   	zipObj2.write('shodanout.json')
+	   	zipObj2.write('ipqualityout.json')
+	   	zipObj2.write('ip2proxyout.json')
+	   	zipObj2.write('vpnapiout.json')
