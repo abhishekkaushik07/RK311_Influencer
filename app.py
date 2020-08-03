@@ -1,23 +1,62 @@
+from flask import send_file, send_from_directory
 from flask import Flask, flash, request, redirect, url_for ,render_template,session
 import json
 import ip2proxyTest
 import ipqualityTest
 import shodanTest
 import whoisTest
+import vpnapiTest
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 from datetime import datetime
 import csv
 import json_to_other
 import readfromcsv
+import os
+from nocache import nocache
 
 app = Flask(__name__)
 GoogleMaps(app)
 
-#read log file using readfromcsv.read_csv() and render the output as list on dashboard.html
-@app.route('/')
+@app.route('/',methods=["POST","GET"])
 def dashboard():
-    return render_template("dashboard.html")
+	file_list = ["pdf_reports.zip", "html_reports.zip", "json_reports.zip", "txt_reports.zip", "ip2proxyout.txt", "whoisout.txt", "shodanout.txt", "ipqualityout.txt", "ip2proxyout.json", "whoisout.json", "shodanout.json", "ipqualityout.json", "ip2proxyout.html", "whoisout.html", "shodanout.html", "ipqualityout.html", "ip2proxyout.pdf", "whoisout.pdf", "shodanout.pdf", "ipqualityout.pdf", "vpnapiout.json", "vpnapiout.txt", "vpnapiout.html", "vpnapiout.pdf"]
+	for filename in file_list:
+		if os.path.exists(filename):
+			os.remove(filename)
+
+	recent_ips = readfromcsv.read_csv()
+	return render_template("dashboard.html", recent_ips=recent_ips[0], total_ips=recent_ips[1])
+
+
+# download reports --------------------------------------
+@app.route('/pdf_report',methods=["POST","GET"])
+@nocache
+def pdf_report():
+    #return send_file('pdf_reports.zip', attachment_filename = 'pdf_reports.zip', as_attachment = True)
+    return send_from_directory("",'html_reports.zip', as_attachment=True)
+
+@app.route('/html_report',methods=["POST","GET"])
+@nocache
+def html_report():
+    #return send_file('html_reports.zip', attachment_filename = 'html_reports.zip', as_attachment = True)
+    return send_from_directory("",'html_reports.zip', as_attachment=True)
+
+@app.route('/json_report',methods=["POST","GET"])
+@nocache
+def json_report():
+    #return send_file('json_reports.zip', attachment_filename = 'json_reports.zip', as_attachment = True)
+    return send_from_directory("",'html_reports.zip', as_attachment=True)
+
+@app.route('/txt_report',methods=["POST","GET"])
+@nocache
+def txt_report():
+    #return send_file('txt_reports.zip', attachment_filename = 'txt_reports.zip', as_attachment = True)
+    return send_from_directory("",'html_reports.zip', as_attachment=True)
+
+
+#-----------------------------------------------------------
+
 
 @app.route('/search',methods=["POST","GET"])
 def ip_search():
@@ -30,11 +69,12 @@ def ip_search():
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
     ip2proxy_out = ip2proxyTest.ip2proxy_fun(ip)
+    # with open('ip2proxyout.json') as f:
+    #     ip2proxy_out = json.load(f) 
     ipquality_out = ipqualityTest.ipquality_fun(ip)
     shodan_out = shodanTest.shodan_fun(ip)
     whois_out = whoisTest.whois_fun(ip)
-
-    json_to_other.convert_json()
+    vpnapi_out = vpnapiTest.vpnapi_fun(ip)
 
 #-------------------------------------------------------------------- 
     if(whois_out != {} and whois_out['nets']):
@@ -209,6 +249,16 @@ def ip_search():
             ip2proxy_vpn = True
             vpn_score += 20
             proxy_score += 25
+
+    vpnapi_proxy = False
+    vpnapi_vpn = False
+    if(vpnapi_out != {} and vpnapi_out['security'] != {} and vpnapi_out['security']['vpn'] == True):
+        vpnapi_vpn = True
+        #vpn_score += 0
+    elif(vpnapi_out != {} and vpnapi_out['security'] != {} and vpnapi_out['security']['proxy'] == True):
+        vpnapi_proxy = True
+        #proxy_score += 0
+
 #-----------------------------------------------------------------------------
 
     vpn_level = ""
@@ -231,6 +281,8 @@ def ip_search():
         proxy_level = "Moderate"
     else :
         proxy_level = "High"
+
+    json_to_other.generate_reports()
 #--------------------------------------------------------------------------
 
     # ip, vpn_level, proxy_level, fraud, time to be stored in a csv file
@@ -246,8 +298,7 @@ def ip_search():
         csvwriter = csv.writer(csvfile)
         # writing the data rows 
         csvwriter.writerow(temp)
-	    
-    return render_template("result.html",ip=given_ip, whois_res=whois_final, ipquality_final=ipquality_final, mymap=mymap, lat_log=str_lat_log, shodan_vpn=shodan_vpn, fraud=fraud, vpn_level=vpn_level, proxy_level=proxy_level, ipquality_vpn=ipquality_vpn, ipquality_proxy=ipquality_proxy, ip2proxy_proxy=ip2proxy_proxy, ip2proxy_vpn=ip2proxy_vpn)
+    return render_template("result.html",ip=given_ip, whois_res=whois_final, ipquality_final=ipquality_final, mymap=mymap, lat_log=str_lat_log, shodan_vpn=shodan_vpn, fraud=fraud, vpn_level=vpn_level, proxy_level=proxy_level, ipquality_vpn=ipquality_vpn, ipquality_proxy=ipquality_proxy, ip2proxy_proxy=ip2proxy_proxy, ip2proxy_vpn=ip2proxy_vpn, vpnapi_proxy=vpnapi_proxy, vpnapi_vpn=vpnapi_vpn)
 
 if __name__ == '__main__':
     app.run(host='localhost',port =5544,debug=True)
