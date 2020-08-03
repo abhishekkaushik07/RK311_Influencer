@@ -25,6 +25,7 @@
 		11. pip install flask-googlemaps
 		12. pip install pdfkit
 		13. pip install zipfile36
+		14. pip install numpy
 
 3. Usage
 	1. Use following command in parent directory of sih project folder
